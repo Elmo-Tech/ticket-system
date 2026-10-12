@@ -4,11 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 import publicApi from "../../services/publicApi";
 import { isCustomerTokenError } from "../../utils/customerTickets";
 
-export const useCustomerTickets = (token, page) => useQuery({
-    queryKey: ["customerTickets", token, page],
+export const useCustomerTickets = (token, page, filters = {}) => useQuery({
+    queryKey: ["customerTickets", token, page, filters],
     queryFn: async ({ signal }) => {
         const { data } = await publicApi.get("customer/tickets", {
-            params: { token, page, pageSize: 10 },
+            params: {
+                token,
+                page,
+                pageSize: 10,
+                "filter[status]": filters.status ?? undefined,
+                "filter[description]": filters.description || undefined,
+            },
             signal,
         });
         if (!Array.isArray(data?.result?.tickets) || !data?.pagination) {

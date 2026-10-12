@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Alert, Button, Empty, Pagination, Skeleton, Tag } from "antd";
-import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
+import { Alert, Button, Empty, Form, Pagination, Skeleton, Tag } from "antd";
+import { ArrowLeftOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
 
 import { useCustomerTicketDetails, useCustomerTickets, useCustomerTokenExpiry } from "../../hooks/tickets/useCustomerTickets";
-import { getTimelineStatusLabel } from "../../utils/ticketTimeline";
+import { getTimelineStatusLabel, timelineStatusOptions } from "../../utils/ticketTimeline";
 import { UrgenzaOptions } from "../../utils/Functions";
 import { formatTimelineDate, TimelineAttachmentList } from "../TicketTimeline/TimelineConversation";
 import CustomerTicketHistory from "./CustomerTicketHistory";
 import CustomerTicketError from "./CustomerTicketError";
+import { SelectInput, TextInput } from "../common";
 
 export const CustomerTicketBadges = ({ ticket }) => (
     <div className="flex flex-wrap gap-2">
@@ -60,12 +61,29 @@ const CustomerTicketDetails = ({ token, ticketId, summary, onBack, onSessionExpi
 };
 
 const CustomerTickets = ({ token, onCreateTicket, onSessionExpired }) => {
+    const [filterForm] = Form.useForm();
+    const [filters, setFilters] = useState({});
     const [page, setPage] = useState(1);
     const [selectedTicket, setSelectedTicket] = useState(null);
-    const ticketsQuery = useCustomerTickets(token, page);
+    const ticketsQuery = useCustomerTickets(token, page, filters);
     useCustomerTokenExpiry(ticketsQuery.error, onSessionExpired);
     const tickets = ticketsQuery.data?.result?.tickets || [];
     const pagination = ticketsQuery.data?.pagination;
+    const hasFilters = filters.status !== undefined || Boolean(filters.description);
+
+    const applyFilters = (values) => {
+        setPage(1);
+        setFilters({
+            status: values.status ?? undefined,
+            description: values.description?.trim() || undefined,
+        });
+    };
+
+    const clearFilters = () => {
+        filterForm.setFieldsValue({ status: undefined, description: "" });
+        setPage(1);
+        setFilters({});
+    };
 
     if (selectedTicket) {
         return <CustomerTicketDetails key={selectedTicket.ticketId} token={token} ticketId={selectedTicket.ticketId} summary={selectedTicket} onBack={() => setSelectedTicket(null)} onSessionExpired={onSessionExpired} />;
@@ -80,11 +98,36 @@ const CustomerTickets = ({ token, onCreateTicket, onSessionExpired }) => {
                 </div>
                 <Button icon={<SyncOutlined />} loading={ticketsQuery.isFetching} onClick={() => ticketsQuery.refetch()}>Aggiorna</Button>
             </div>
+            <Form
+                form={filterForm}
+                name="customer-ticket-filters"
+                layout="vertical"
+                initialValues={filters}
+                onFinish={applyFilters}
+                className="mb-5 rounded-xl border border-slate-200 bg-slate-50 p-4"
+            >
+                <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+                    <Form.Item name="status" label="Stato">
+                        <SelectInput allowClear placeholder="Tutti gli stati" options={timelineStatusOptions} />
+                    </Form.Item>
+                    <Form.Item name="description" label="Cerca nella descrizione">
+                        <TextInput placeholder="Testo della descrizione" />
+                    </Form.Item>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Button type="primary" htmlType="submit" icon={<SearchOutlined />} loading={ticketsQuery.isFetching}>Filtra</Button>
+                    <Button onClick={clearFilters}>Cancella filtri</Button>
+                </div>
+            </Form>
             {ticketsQuery.isPending ? <Skeleton active paragraph={{ rows: 8 }} /> : ticketsQuery.isError ? (
                 <CustomerTicketError error={ticketsQuery.error} onRetry={() => ticketsQuery.refetch()} />
             ) : tickets.length === 0 ? (
-                <Empty description="Non hai ancora ticket">
-                    <Button type="primary" onClick={onCreateTicket}>Crea il tuo primo ticket</Button>
+                <Empty description={hasFilters ? "Nessun ticket corrisponde ai filtri" : "Non hai ancora ticket"}>
+                    {hasFilters ? (
+                        <Button onClick={clearFilters}>Mostra tutti i ticket</Button>
+                    ) : (
+                        <Button type="primary" onClick={onCreateTicket}>Crea il tuo primo ticket</Button>
+                    )}
                 </Empty>
             ) : (
                 <>
