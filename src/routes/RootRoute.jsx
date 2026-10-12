@@ -16,6 +16,10 @@ export const RootRoute = {
             element: <NewTicket />,
         },
         {
+            path: "new-tickets",
+            element: <NewTicket />,
+        },
+        {
             path: "review",
             element: <Review />,
         },

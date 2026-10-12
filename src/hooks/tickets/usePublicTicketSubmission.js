@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { toast } from "react-toastify";
+import publicApi from "../../services/publicApi";
 
 const showErrors = (error) => {
     const response = error?.response?.data;
@@ -14,13 +14,13 @@ const showErrors = (error) => {
 
 export const useIdentifyPublicTicketRequester = (afterSuccess) => {
     return useMutation({
-        mutationFn: (credentials) => axios.post("public/tickets/identify", credentials),
+        mutationFn: (credentials) => publicApi.post("public/tickets/identify", { ...credentials, pin: String(credentials.pin) }),
         onSuccess: ({ data }) => afterSuccess(data.data),
         onError: showErrors,
     });
 };
 
-export const useCreatePublicTicket = (afterSuccess) => {
+export const useCreatePublicTicket = (afterSuccess, afterError) => {
     return useMutation({
         mutationFn: ({ attachments = [], ...fields }) => {
             const formData = new FormData();
@@ -32,7 +32,7 @@ export const useCreatePublicTicket = (afterSuccess) => {
             });
             attachments.forEach((file) => formData.append("attachments[]", file));
 
-            return axios.post("public/tickets/create", formData, {
+            return publicApi.post("public/tickets/create", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
         },
@@ -40,6 +40,9 @@ export const useCreatePublicTicket = (afterSuccess) => {
             toast.success("Ticket created successfully");
             afterSuccess();
         },
-        onError: showErrors,
+        onError: (error) => {
+            showErrors(error);
+            afterError?.(error);
+        },
     });
 };

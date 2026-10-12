@@ -17,7 +17,7 @@ export const formatTimelineDate = (value, emptyValue = "Non disponibile") => {
     return parsedDate.isValid() ? parsedDate.format("DD/MM/YYYY HH:mm") : value;
 };
 
-const TimelineAttachmentList = ({ attachments = [] }) => {
+export const TimelineAttachmentList = ({ attachments = [] }) => {
     if (attachments.length === 0) {
         return null;
     }
