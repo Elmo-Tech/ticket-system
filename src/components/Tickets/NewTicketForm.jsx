@@ -11,6 +11,7 @@ import { UrgenzaOptions } from "../../utils/Functions";
 import { Buttons, SelectInput, TextInput } from "../common";
 import CustomerTickets from "./CustomerTickets";
 import TicketLayout from "./TicketLayout";
+import PriorityLegend from "./PriorityLegend";
 
 const { Dragger, LIST_IGNORE } = Upload;
 
@@ -190,6 +191,8 @@ const NewTicketForm = () => {
                                 />
                             </Form.Item>
                         </div>
+
+                        <PriorityLegend />
 
                         <Form.Item
                             name="description"
