@@ -15,6 +15,13 @@ import PriorityLegend from "./PriorityLegend";
 
 const { Dragger, LIST_IGNORE } = Upload;
 
+const ticketTagLabels = {
+    general: "GENERICO",
+    "riunione gnp": "MIGLIORIA",
+    sistemistico: "SISTEMISTICO",
+    "errore gnp": "ERRORE SOFTWARE",
+};
+
 const NewTicketForm = () => {
     const [accessForm] = Form.useForm();
     const [ticketForm] = Form.useForm();
@@ -187,7 +194,10 @@ const NewTicketForm = () => {
                                     allowClear
                                     size="large"
                                     placeholder="Inserisci la Tag"
-                                    options={identity.tags || []}
+                                    options={(identity.tags || []).map((tag) => ({
+                                        ...tag,
+                                        label: ticketTagLabels[String(tag.label || "").trim().toLowerCase()] || tag.label,
+                                    }))}
                                 />
                             </Form.Item>
                         </div>
