@@ -8,19 +8,13 @@ import logo from "../../assets/logo.webp";
 import { useCreatePublicTicket, useIdentifyPublicTicketRequester } from "../../hooks/tickets/usePublicTicketSubmission";
 import { useCustomerTicketSession } from "../../hooks/tickets/useCustomerTicketSession";
 import { UrgenzaOptions } from "../../utils/Functions";
+import { getTicketTagOptions } from "../../utils/ticketTags";
 import { Buttons, SelectInput, TextInput } from "../common";
 import CustomerTickets from "./CustomerTickets";
 import TicketLayout from "./TicketLayout";
 import PriorityLegend from "./PriorityLegend";
 
 const { Dragger, LIST_IGNORE } = Upload;
-
-const ticketTagLabels = {
-    general: "GENERICO",
-    "riunione gnp": "MIGLIORIA",
-    sistemistico: "SISTEMISTICO",
-    "errore gnp": "ERRORE SOFTWARE",
-};
 
 const NewTicketForm = () => {
     const [accessForm] = Form.useForm();
@@ -194,10 +188,7 @@ const NewTicketForm = () => {
                                     allowClear
                                     size="large"
                                     placeholder="Inserisci la Tag"
-                                    options={(identity.tags || []).map((tag) => ({
-                                        ...tag,
-                                        label: ticketTagLabels[String(tag.label || "").trim().toLowerCase()] || tag.label,
-                                    }))}
+                                    options={getTicketTagOptions(identity.tags)}
                                 />
                             </Form.Item>
                         </div>

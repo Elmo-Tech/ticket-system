@@ -1,5 +1,6 @@
 import { StatusOptions, UrgenzaOptions } from "../../utils/Functions";
 import { timelineStatusOptions } from "../../utils/ticketTimeline";
+import { getTicketTagOptions } from "../../utils/ticketTags";
 
 export const TicketObj = ({ customes, azienda, tags, inEdit }) => {
 	return [
@@ -41,7 +42,7 @@ export const TicketObj = ({ customes, azienda, tags, inEdit }) => {
 			type: "select",
 			placeholder: "Inserisci la Tag",
 			rules: { required: false, message: "Inserisci la Tag" },
-			options: tags,
+			options: getTicketTagOptions(tags),
 		},
 		{
 			name: "status",

@@ -1,5 +1,6 @@
 import { StatusOptions2 } from "../../utils/Functions";
 import { timelineStatusOptions } from "../../utils/ticketTimeline";
+import { getTicketTagOptions } from "../../utils/ticketTags";
 
 export const TicketFilterInputs = ({ customes, azienda, tags }) => {
     return [
@@ -33,7 +34,7 @@ export const TicketFilterInputs = ({ customes, azienda, tags }) => {
 			type: "select",
 			placeholder: "Inserisci la Tag",
 			rules: { required: false, message: "Inserisci la Tag" },
-			options: tags,
+			options: getTicketTagOptions(tags),
 		},
         {
             name: "company",
