@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { sumErrors } from "../../../utils/Functions";
 
-export const useTickets = (pagination, setPagination, resetParamPageId) => {
+export const useTickets = (pagination, setPagination) => {
     const getTickets = async () => {
         const response = await axios.get("admin/tickets", {
             params: {
@@ -22,7 +22,6 @@ export const useTickets = (pagination, setPagination, resetParamPageId) => {
         } = response;
 
         setPagination({ position: ["bottomLeft"], total, pageSize, current });
-        resetParamPageId();
         return tickets.map((ticket) => ({ ...ticket, key: ticket.ticketId }));
     };
 

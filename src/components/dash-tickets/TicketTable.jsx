@@ -9,12 +9,13 @@ import TicketModalForm from "./TicketModalForm";
 
 const TicketTable = () => {
     const { filterData } = useFilter();
-    const { pagenation, setDetailsId, setPagenation } = useTable();
+    const { pagenation, setPagenation } = useTable();
 
     const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [detailsId, setDetailsId] = React.useState(null);
     const [initialTab, setInitialTab] = React.useState("details");
 
-    const { data: tickets, isLoading, refetch } = useTickets({ ...pagenation, filter: filterData }, setPagenation, setDetailsId);
+    const { data: tickets, isLoading, refetch } = useTickets({ ...pagenation, filter: filterData }, setPagenation);
     const { mutate: deleteTicket } = useDeleteTicket(refetch);
     
     // New hook for fetching all tickets for export
@@ -68,6 +69,7 @@ const TicketTable = () => {
                 width={1100}
                 title={"Ticket details"}>
                 <TicketModalForm
+                    detailsId={detailsId}
                     initialTab={initialTab}
                     closeModal={() => {
                         setIsModalOpen(false);

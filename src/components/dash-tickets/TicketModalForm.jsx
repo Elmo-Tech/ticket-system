@@ -6,7 +6,6 @@ import { Cookies } from "react-cookie";
 import { MdOutlineTranslate } from "react-icons/md";
 import { FiExternalLink, FiFileText, FiImage } from "react-icons/fi";
 
-import { useTable } from "../../store";
 import { useSelects } from "../../hooks/global/useSelectsHook";
 import { useTicketLogs, useTicketsEdit, useUpdateTicket } from "../../hooks/dashboard/tickets/useTicketsHooks";
 import { useUpdateAdminTimelineStatus } from "../../hooks/dashboard/tickets/useAdminTicketTimeline";
@@ -73,8 +72,7 @@ const openAttachmentInNewTab = (url) => {
     window.open(url, "_blank", "noopener,noreferrer");
 };
 
-const TicketModalForm = ({ closeModal, initialTab = "details" }) => {
-    const { detailsId } = useTable();
+const TicketModalForm = ({ closeModal, detailsId, initialTab = "details" }) => {
     const [form] = Form.useForm();
     const cookies = new Cookies();
 
@@ -123,7 +121,7 @@ const TicketModalForm = ({ closeModal, initialTab = "details" }) => {
         };
         form.setFieldsValue(values);
     });
-    const { mutate: update } = useUpdateTicket(() => {
+    const { mutate: update, isPending: isUpdating } = useUpdateTicket(() => {
         form.resetFields();
         closeModal();
     });
@@ -220,7 +218,7 @@ const TicketModalForm = ({ closeModal, initialTab = "details" }) => {
                 )}
                 <pre className="w-full whitespace-pre-wrap rounded-md bg-slate-50 p-3 text-sm font-medium leading-6 text-slate-800" dangerouslySetInnerHTML={{ __html: description }} />
             </section>
-            <Buttons className="mt-4" type="primary" size="large" block loading={false} htmlType="submit">
+            <Buttons className="mt-4" type="primary" size="large" block loading={isUpdating} disabled={!detailsId} htmlType="submit">
                 {detailsId ? "Modifica" : "Salva"}
             </Buttons>
         </Form>
